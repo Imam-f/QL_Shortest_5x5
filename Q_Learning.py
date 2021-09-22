@@ -1,15 +1,28 @@
+"""
+Python code for MBKM RL SoC
+"""
 import random
 
+# Q learning parameter
 alpha = 0.5
 gamma = 0.9
+
+# Q table
 Q_table = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
+# fill Q table
 for i in range(24):
     for j in range(4):   
        Q_table[i][j] = random.random()
 
 
+
 def print_Qtable(Q_table):
+    """
+    Function to print Q table
+    param : Q_table
+    return : void
+    """
     print("\nState\t\tRight\t\t\tUp\t\t\tLeft\t\t\tDown")
     print("-----\t\t-----\t\t\t-----\t\t\t-----\t\t\t-----")
 
@@ -22,27 +35,43 @@ def print_Qtable(Q_table):
 
     print(s+1, "\t", Q_table[s][0], "\t\t\t", Q_table[s][1], "\t\t\t", Q_table[s][2], "\t\t\t", Q_table[s][3], "\n")
 
+
+
 def Search_Location(maze):
+    """
+    A function to convert maze state to object location
+    param : maze location
+    return : linear position, position x, position y
+    """
     for i in range(5):
         for j in range(5):
             if maze[i][j] == 1:
                 return (5 * (i) + j + 1), i + 1, j + 1
 
+
+
 def Action(mazes, Q_tables, epsilons):
+    """
+    A funtion to take action based on epsilon delta and Q matrix
+    param : position in maze, Q table, epsilon
+    return : action, new position
+    """
     out = 0
 
     while out == 0:
+        # Find location in maze
         state, state_i, state_j = Search_Location(mazes)
 
         rdm = random.random()
 
+
+        # Pick action based random number epsilon yields
         if epsilons <= rdm:
             max_value = max(Q_tables[state-1][0], Q_tables[state-1][1], Q_table[state-1][2], Q_table[state-1][3])
             
             for j in range(4):
                 if max_value == Q_tables[state-1][j]:
                     act = j+1
-        
         else:
             random_value = random.random()
 
@@ -55,6 +84,7 @@ def Action(mazes, Q_tables, epsilons):
             else:
                 act = 4
 
+        # Next state given certain action
         if act == 1:
             state_j += 1
         elif act == 2:
@@ -64,6 +94,8 @@ def Action(mazes, Q_tables, epsilons):
         else:
             state_i += 1
 
+        # Check if exit map
+        # If yes, retake action
         if state_i == 0:
             out = 0 
         elif state_j == 0:
@@ -75,11 +107,19 @@ def Action(mazes, Q_tables, epsilons):
         else:
             out = out + 1
 
+    # Calculate new position in maze
     new_mazes = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
     new_mazes[state_i - 1][state_j - 1] = 1
     return act, new_mazes
 
+
+
 def Routing(Q_table):
+    """
+    A function to show fastest route based on Q table
+    param : Q table
+    return : void
+    """
     print("Route")
     s = 1
 
@@ -127,7 +167,16 @@ def Routing(Q_table):
     if i == 25:
         print("error")
 
+
+
 def update_Qvalue(states, new_states, Q_tabless, acts, alphas, gammas, t):
+    """ 
+    A funtion to find reward and update Q function based on action
+    param : linear position, new state, Q table, action, alpha, gamma, time step
+    return : Q table, new state
+    """
+
+    # Calculate rewards
     if new_states == 25:
         reward = 100
     elif t == 15:     
@@ -151,32 +200,50 @@ def update_Qvalue(states, new_states, Q_tabless, acts, alphas, gammas, t):
     else:
         reward = 0 
     
+    # Update Q table
     Q_tabless[states - 1][acts - 1] = (1 - alphas) * Q_tabless[states - 1][acts - 1] + alphas * (reward + gammas * max(Q_tabless[new_states - 1][0], Q_tabless[new_states - 1][1], Q_tabless[new_states - 1][2], Q_tabless[new_states - 1][3]))
     
     return Q_tabless, new_states
 
+
+
+# Print state before learning
 print("\nQ-Table and route before learning")
 print_Qtable(Q_table)
 Routing(Q_table)
 
+
+# Learning algorithm
 for Episode in range(1, 301):
+    # Initial maze
     maze = [[1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
+    
+    # Decaying Epsilon
     epsilon = 1 - (Episode / 301)
 
+    # Steps in episode
     for i in range(1, 16):
+        # Find location
         state, state_i, state_j = Search_Location(maze)
         
+        # Finish condition
         if state == 25:
             break
         
+        # Take action based on state
         actss, new_maze = Action(maze, Q_table, epsilon)
 
+        # Move to next state
         new_state, new_state_i, new_state_j = Search_Location(new_maze)
         
+        # Update Q value based on rewards
         Q_table, new_state = update_Qvalue(state, new_state, Q_table, actss, alpha, gamma, i)
 
+        # Store new state
         maze = new_maze
 
+
+# Print result
 print("\nQ-Table and route after learning")
 print_Qtable(Q_table)
 Routing(Q_table)
