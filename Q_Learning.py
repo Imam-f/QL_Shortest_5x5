@@ -64,7 +64,6 @@ def Action(mazes, Q_tables, epsilons):
 
         rdm = random.random()
 
-
         # Pick action based random number epsilon yields
         if epsilons <= rdm:
             max_value = max(Q_tables[state-1][0], Q_tables[state-1][1], Q_table[state-1][2], Q_table[state-1][3])
