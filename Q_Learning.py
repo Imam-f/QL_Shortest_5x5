@@ -7,7 +7,9 @@ import random
 alpha = 0.5
 gamma = 0.9
 
-# Q table
+
+# Initialize Q table
+#####################
 Q_table = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 
 # fill Q table
@@ -17,7 +19,7 @@ for i in range(24):
 
 
 
-def print_Qtable(Q_table):
+def print_Qtable(Q_table): ####################################
     """
     Function to print Q table
     param : Q_table
@@ -66,9 +68,11 @@ def Action(mazes, Q_tables, epsilons):
 
         # Pick action based random number epsilon yields
         if epsilons <= rdm:
-            max_value = max(Q_tables[state-1][0], Q_tables[state-1][1], Q_table[state-1][2], Q_table[state-1][3])
+            ########################
+            max_value = max(Q_tables[state-1][0], Q_tables[state-1][1], Q_table[state-1][2], Q_table[state-1][3]) 
             
             for j in range(4):
+                #######################
                 if max_value == Q_tables[state-1][j]:
                     act = j+1
         else:
@@ -123,22 +127,28 @@ def Routing(Q_table):
     s = 1
 
     for i in range(1,26):
+        # Error if find obstacle
         if s==5 or s==7 or s==8 or s==14 or s==17 or s==19 or s==20 or s==22:
             print("error")
             break
 
+        # Success if find end
         if s == 25:
-            print("S", s, "Goal!")
+            print("S", s, " Goal!", sep="")
             break
        
-        print("S", s, end=" ")
+        # Print current state
+        print("S", s, end=" ", sep="")
 
+        #######################################
+        # Find next step
         M = max(Q_table[s-1][0], Q_table[s-1][1], Q_table[s-1][2], Q_table[s-1][3])
         I = 0
-        while Q_table[s-1][I] != M:
+        while Q_table[s-1][I] != M:   ##############
             I += 1
         I += 1
 
+        # Take next step
         if I == 1:
             if s%5 != 0:
                 s = s+1
@@ -200,9 +210,10 @@ def update_Qvalue(states, new_states, Q_tabless, acts, alphas, gammas, t):
         reward = 0 
     
     # Update Q table
+    ##################################################
     Q_tabless[states - 1][acts - 1] = (1 - alphas) * Q_tabless[states - 1][acts - 1] + alphas * (reward + gammas * max(Q_tabless[new_states - 1][0], Q_tabless[new_states - 1][1], Q_tabless[new_states - 1][2], Q_tabless[new_states - 1][3]))
-    
-    return Q_tabless, new_states
+
+    return Q_tabless, new_states ########################
 
 
 
