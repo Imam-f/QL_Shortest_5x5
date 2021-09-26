@@ -2,6 +2,7 @@ import pygame
 import random 
 rdm = 0
 reward = 0
+
 #initialize pygame
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -16,6 +17,7 @@ pygame.init()
 
 #background
 bgnd = pygame.image.load('background2.png')
+
 #create the screen
 screen = pygame.display.set_mode((600, 600))
 
@@ -24,33 +26,36 @@ pygame.display.set_caption("Reinforcement Learning")
 
 #player
 agenIcon = pygame.image.load('walk.png')
+demonIcon = pygame.image.load('demon.png')
+goldIcon = pygame.image.load('ingots.png')
+
 agenX = 0
 agenY = 0
-demonIcon = pygame.image.load('demon.png')
-#demonX = 120
-#demonY = 120
-goldIcon = pygame.image.load('ingots.png')
 goldX = 480
 goldY = 480
 
+
 def agen(x, y):
     screen.blit(agenIcon, (x, y))
-def demon1():
-    screen.blit(demonIcon, (480, 0)) #
-def demon2():
-    screen.blit(demonIcon, (120, 120)) #
-def demon3():
-    screen.blit(demonIcon, (240, 120)) #
-def demon4():
-    screen.blit(demonIcon, (360, 240)) #
-def demon5():
-    screen.blit(demonIcon, (120, 360)) #
-def demon6():
-    screen.blit(demonIcon, (360, 360)) #
-def demon7():
-    screen.blit(demonIcon, (480, 360)) #
-def demon8():
-    screen.blit(demonIcon, (120, 480)) #
+
+def demon(x):
+    if x == 1:
+        screen.blit(demonIcon, (480, 0)) #
+    elif x == 2:
+        screen.blit(demonIcon, (120, 120)) #
+    elif x == 3:
+        screen.blit(demonIcon, (240, 120)) #
+    elif x == 4:
+        screen.blit(demonIcon, (360, 240)) #
+    elif x == 5:
+        screen.blit(demonIcon, (120, 360)) #
+    elif x == 6:
+        screen.blit(demonIcon, (360, 360)) #
+    elif x == 7:
+        screen.blit(demonIcon, (480, 360)) #
+    elif x == 8:
+        screen.blit(demonIcon, (120, 480)) #
+
 def gold():
     screen.blit(goldIcon, (goldX, goldY))
 
@@ -79,37 +84,23 @@ def isCollision(x, y):
         return True
     else:
         return False
+
 def isGoal():
     if(agenX==480 and agenY==480):
         return True
     else:
         return False
-'''
-#Q learning algorithm
-alpha = 0.5
-gamma = 0.9
-Q_table = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-def q_learning():
-    rdm = random.random()
-
-    if epsilons
-'''
 
 #Game loop
 running = True
 while running:
     screen.fill(WHITE)
     agen(agenX, agenY)
-    demon1()
-    demon2()
-    demon3()
-    demon4()
-    demon5()
-    demon6()
-    demon7()
-    demon8()
+    for i in range(8):
+        demon(i)
     gold()
     screen.blit(bgnd, (0, 0))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -130,6 +121,7 @@ while running:
         reward -= 1
         print("reward = ")
         print(reward)
+
     goal = isGoal()
     if goal:
         agenX=0
@@ -138,5 +130,4 @@ while running:
         print("reward = ")
         print(reward)
 
-    
     pygame.display.update()
