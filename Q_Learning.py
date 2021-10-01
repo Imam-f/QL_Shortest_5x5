@@ -54,7 +54,7 @@ def Search_Location(maze):
 
 def Action(mazes, Q_tables, epsilons):
     """
-    A funtion to take action based on epsilon delta and Q matrix
+    A function to take action based on epsilon delta and Q matrix
     param : position in maze, Q table, epsilon
     return : action, new position
     """
@@ -140,8 +140,8 @@ def Routing(Q_table):
         # Print current state
         print("S", s, end=" ", sep="")
 
-        #######################################
         # Find next step
+        #######################################
         M = max(Q_table[s-1][0], Q_table[s-1][1], Q_table[s-1][2], Q_table[s-1][3])
         I = 0
         while Q_table[s-1][I] != M:   ##############
@@ -180,7 +180,7 @@ def Routing(Q_table):
 
 def update_Qvalue(states, new_states, Q_tabless, acts, alphas, gammas, t):
     """ 
-    A funtion to find reward and update Q function based on action
+    A function to find reward and update Q function based on action
     param : linear position, new state, Q table, action, alpha, gamma, time step
     return : Q table, new state
     """
@@ -214,6 +214,7 @@ def update_Qvalue(states, new_states, Q_tabless, acts, alphas, gammas, t):
     Q_tabless[states - 1][acts - 1] = (1 - alphas) * Q_tabless[states - 1][acts - 1] + alphas * (reward + gammas * max(Q_tabless[new_states - 1][0], Q_tabless[new_states - 1][1], Q_tabless[new_states - 1][2], Q_tabless[new_states - 1][3]))
 
     return Q_tabless, new_states ########################
+
 
 
 
