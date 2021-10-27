@@ -213,7 +213,7 @@ def update_Qvalue(states, new_states, Q_tabless, acts, alphas, gammas, t):
     ##################################################
     Q_tabless[states - 1][acts - 1] = (1 - alphas) * Q_tabless[states - 1][acts - 1] + alphas * (reward + gammas * max(Q_tabless[new_states - 1][0], Q_tabless[new_states - 1][1], Q_tabless[new_states - 1][2], Q_tabless[new_states - 1][3]))
 
-    return Q_tabless, new_states ########################
+    return Q_tabless, new_states, Q_tabless[states - 1][acts - 1], reward ########################
 
 
 
@@ -236,6 +236,9 @@ for Episode in range(1, 301):
     for i in range(1, 16):
         # Find location
         state, state_i, state_j = Search_Location(maze)
+
+        if Episode == 1:
+            print("State : ",state)
         
         # Finish condition
         if state == 25:
@@ -244,11 +247,19 @@ for Episode in range(1, 301):
         # Take action based on state
         actss, new_maze = Action(maze, Q_table, epsilon)
 
+        if Episode == 1:
+            print("Action : ",actss)
+
         # Move to next state
         new_state, new_state_i, new_state_j = Search_Location(new_maze)
         
         # Update Q value based on rewards
-        Q_table, new_state = update_Qvalue(state, new_state, Q_table, actss, alpha, gamma, i)
+        Q_table, new_state, Qnew, rewards = update_Qvalue(state, new_state, Q_table, actss, alpha, gamma, i)
+        
+        if Episode == 1:
+            print("Rewards : ", rewards)
+            print("Qnew : ",Qnew)
+            print()
 
         # Store new state
         maze = new_maze
