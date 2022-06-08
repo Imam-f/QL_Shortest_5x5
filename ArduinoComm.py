@@ -3,7 +3,7 @@ import time
 from pynq import PL
 from pynq import Overlay, MMIO, Clocks, allocate
 import os, warnings
-from IPython import get_ipython
+# from IPython import get_ipython
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -35,7 +35,7 @@ print("entry")
 def main():
 
     Q_table = main_learning()
-    ser = serial.Serial('/dev/ttyACM0', baudrate = 9600, timeout=1)
+    ser = serial.Serial('/dev/ttyUSB0', baudrate = 57600, timeout=1)
     # ser = serial.Serial('COM4', baudrate = 9600, timeout=1)
     time.sleep(3)
     step = 0
@@ -51,34 +51,44 @@ def main():
             break
         step += 1
 
-
         internal_state = Data()
         rl_state = Data()
         rl_action = Data()
+        ready_state = Data()
         internal_state = Data()
 
-
+        print(f"{step=}\n");
         status = getValues(ser,"internal",internal_state)
-        print(status.strip(),internal_state.message.strip())
+        print("1.",status.strip(),internal_state.message.strip())
 
 
         status = getValues(ser,"state",rl_state)
-        print(status.strip(),rl_state.message.strip())
+        print("2.",status.strip(), "[state]",rl_state.message.strip())
 
-        s = int(rl_state.message)
+        try:
+            s = int(rl_state.message.strip())
+        except:
+            s = 0
+            print(rl_state.message, rl_state.message.encode("ascii"))
         M = max(Q_table[s][0], Q_table[s][1], Q_table[s][2], Q_table[s][3])
         S = 0
         while Q_table[s][S] != M:
             S += 1
         rl_action.message = f"{S}"
 
+        waiter = 1
+        while waiter:
+            status = getValues(ser,"ready",ready_state)
+            print(status.strip(),ready_state.message.strip())
+            if ready_state.message.strip() == "1":
+                waiter = 0
 
         status = setValues(ser,"action",rl_action)
-        print(status.strip(),rl_action.message.strip())
+        print("3.",status.strip(),rl_action.message.strip())
 
 
         status = getValues(ser,"internal",internal_state)
-        print(status.strip(),internal_state.message.strip())
+        print("4.",status.strip(),internal_state.message.strip())
 
         print("=======================")
 
@@ -270,4 +280,5 @@ def main_learning():
 
 
 main()
+
 
